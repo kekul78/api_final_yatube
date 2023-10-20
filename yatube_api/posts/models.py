@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-
+from django.template.defaultfilters import truncatewords
 User = get_user_model()
 
 
@@ -19,6 +19,16 @@ class Follow(models.Model):
     following = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='following')
 
+    class Meta:
+        constraints = (
+            # Я решил что для проверки подписки на самого себя лучше
+            # использовать UniqueConstraint а не CheckConstraint
+            models.UniqueConstraint(
+                fields=('user', 'following'),
+                name='user_following_unique'
+            ),
+        )
+
 
 class Post(models.Model):
     text = models.TextField()
@@ -32,8 +42,11 @@ class Post(models.Model):
         related_name='posts', blank=True, null=True
     )
 
+    class Meta:
+        ordering = ('id',)
+
     def __str__(self):
-        return self.text
+        return truncatewords(self.text, 7)
 
 
 class Comment(models.Model):
