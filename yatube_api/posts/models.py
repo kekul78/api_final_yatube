@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.template.defaultfilters import truncatewords
+
+
 User = get_user_model()
 
 
